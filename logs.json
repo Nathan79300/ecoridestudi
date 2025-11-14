@@ -1,0 +1,14 @@
+[
+    {
+        "admin_id": 77,
+        "action": "suspendre_compte",
+        "cible": "baba@example.com",
+        "date": "2025-05-19T15:07:28+02:00"
+    },
+    {
+        "admin_id": 77,
+        "action": "suspendre_compte",
+        "cible": "alipe@example.com",
+        "date": "2025-05-19T15:07:33+02:00"
+    }
+]
