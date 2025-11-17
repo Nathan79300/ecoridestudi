@@ -2,21 +2,27 @@
 session_start();
 require_once(__DIR__ . '/../includes/db.php');
 
+// Sécurité : accès réservé employé
 if (!isset($_SESSION['employe_id'])) {
-    header('Location: ../index.php?page=connexion_employe');
+    header('Location: /ecoridestudi/ecoride/index.php?page=connexion_employe');
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['avis_id'], $_POST['action'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['avis_id']) && !empty($_POST['action'])) {
+
     $avis_id = (int) $_POST['avis_id'];
-    $action = $_POST['action'];
+    $action  = $_POST['action'];
 
     if ($action === 'valider') {
-        $pdo->prepare("UPDATE avis SET valide = 1 WHERE id = ?")->execute([$avis_id]);
+        $sql = "UPDATE avis SET valide = 1 WHERE id = ?";
+        $pdo->prepare($sql)->execute([$avis_id]);
+
     } elseif ($action === 'refuser') {
-        $pdo->prepare("UPDATE avis SET valide = -1 WHERE id = ?")->execute([$avis_id]);
+        $sql = "UPDATE avis SET valide = -1 WHERE id = ?";
+        $pdo->prepare($sql)->execute([$avis_id]);
     }
 }
 
-header('Location: espace_employe.php');
+// Retour propre vers l’espace employé via index
+header('Location: /ecoridestudi/ecoride/index.php?page=espace_employe');
 exit;
