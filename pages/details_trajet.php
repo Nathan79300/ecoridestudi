@@ -11,7 +11,7 @@ if (!isset($_GET['id'])) {
 
 $id = intval($_GET['id']);
 
-// Récupération des infos trajet + conducteur + véhicule
+// Récupération trajet + conducteur + véhicule
 $sql = "
     SELECT t.*, u.nom AS conducteur_nom, u.prenom, u.id AS conducteur_id, 
            v.marque, v.modele, v.energie
@@ -29,7 +29,7 @@ if (!$trajet) {
     exit;
 }
 
-// Préférences du conducteur
+// Préférences
 $prefStmt = $pdo->prepare("SELECT * FROM preferences WHERE id_utilisateur = ?");
 $prefStmt->execute([$trajet['conducteur_id']]);
 $preferences = $prefStmt->fetch();
@@ -39,8 +39,9 @@ $avisStmt = $pdo->prepare("SELECT * FROM avis WHERE id_conducteur = ?");
 $avisStmt->execute([$trajet['conducteur_id']]);
 $avisList = $avisStmt->fetchAll();
 
-// Traitement participation
+// Participation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['participer'])) {
+
     if (!isset($_SESSION['utilisateur_id'])) {
         header('Location: ../index.php?page=connexion');
         exit;
@@ -67,18 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['participer'])) {
         $pdo->prepare("UPDATE trajets SET places_restantes = places_restantes - 1 WHERE id = ?")
             ->execute([$trajet['id']]);
 
-        // Mettre à jour les crédits en session
         $_SESSION['credits']--;
-        if (isset($_SESSION['utilisateur']) && is_array($_SESSION['utilisateur'])) {
-            $_SESSION['utilisateur']['credits']--;
-        }
 
-        // Recharger les données
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$id]);
-        $trajet = $stmt->fetch();
-
-        $confirmation = "✅ Participation confirmée ! 1 crédit a été déduit de votre compte.";
+        $confirmation = "✅ Participation confirmée ! 1 crédit a été déduit.";
     }
 }
 ?>
@@ -86,16 +78,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['participer'])) {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Détail du trajet</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/style.css">
+
     <script>
-    function confirmParticipation() {
-        return confirm("Confirmez-vous vouloir utiliser 1 crédit pour ce trajet ?");
-    }
+        function confirmParticipation() {
+            return confirm("Confirmez-vous vouloir utiliser 1 crédit pour ce trajet ?");
+        }
     </script>
 </head>
 <body>
@@ -103,12 +95,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['participer'])) {
 <div class="details-container">
     <h1>🌿 Détails du trajet</h1>
 
+    <!-- MESSAGE DE CONFIRMATION -->
     <?php if (isset($confirmation)): ?>
         <div class="success-message"><?= $confirmation ?></div>
+
+    <!-- MESSAGE D'ERREUR -->
     <?php elseif (isset($erreur)): ?>
         <div class="error-message"><?= $erreur ?></div>
+
+        <!-- BOUTON CHANGER DE RÔLE -->
+  <?php if ($erreur === "Vous devez avoir un compte utilisateur pour participer.") : ?>
+    <div style="text-align:center; margin-top:12px;">
+        <a href="index.php?page=profil"
+           style="
+               display:inline-block;
+               padding:10px 18px;
+               background:#2e7d32;
+               color:white;
+               border-radius:8px;
+               font-weight:bold;
+               text-decoration:none;
+               transition:0.2s;
+           "
+           onmouseover="this.style.background='#276b2b'"
+           onmouseout="this.style.background='#2e7d32'">
+            🔄 Gérer mon rôle
+        </a>
+    </div>
+<?php endif; ?>
+
+
     <?php endif; ?>
 
+    <!-- INFO TRAJET -->
     <div class="section">
         <h2>🛣️ Informations du trajet</h2>
         <p><strong>Départ :</strong> <?= htmlspecialchars($trajet['ville_depart']) ?></p>
@@ -119,6 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['participer'])) {
         <p><strong>Écologique :</strong> <?= $trajet['ecologique'] ? 'Oui' : 'Non' ?></p>
     </div>
 
+    <!-- VEHICULE -->
     <?php if ($trajet['marque']): ?>
     <div class="section">
         <h2>🚗 Véhicule</h2>
@@ -128,6 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['participer'])) {
     </div>
     <?php endif; ?>
 
+    <!-- PREFERENCES -->
     <?php if ($preferences): ?>
     <div class="section">
         <h2>💬 Préférences du conducteur</h2>
@@ -137,12 +158,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['participer'])) {
     </div>
     <?php endif; ?>
 
+    <!-- AVIS -->
     <div class="section">
         <h2>⭐ Avis sur le conducteur</h2>
         <?php if ($avisList): ?>
             <ul>
                 <?php foreach ($avisList as $avis): ?>
-                    <li><strong><?= htmlspecialchars($avis['auteur']) ?> :</strong> <?= htmlspecialchars($avis['commentaire']) ?> <span class="note">(<?= $avis['note'] ?>/5)</span></li>
+                    <li>
+                        <strong><?= htmlspecialchars($avis['auteur']) ?> :</strong>
+                        <?= htmlspecialchars($avis['commentaire']) ?>
+                        <span class="note">(<?= $avis['note'] ?>/5)</span>
+                    </li>
                 <?php endforeach; ?>
             </ul>
         <?php else: ?>
@@ -150,21 +176,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['participer'])) {
         <?php endif; ?>
     </div>
 
+    <!-- PARTICIPER -->
     <div class="section">
         <?php if (!isset($_SESSION['utilisateur_id'])): ?>
-            <p>👉 <a href="index.php?page=connexion">Connectez-vous</a> pour participer à ce trajet.</p>
+            <p>👉 <a href="index.php?page=connexion">Connectez-vous</a> pour participer.</p>
+
         <?php elseif ($trajet['places_restantes'] <= 0): ?>
             <p>😥 Ce trajet est complet.</p>
+
         <?php else: ?>
             <form method="post" onsubmit="return confirmParticipation();">
                 <input type="hidden" name="participer" value="1">
-                <button type="submit" class="btn-participer">🚗 Participer à ce trajet (1 crédit)</button>
+                <button type="submit" class="btn-participer">
+                    🚗 Participer à ce trajet (1 crédit)
+                </button>
             </form>
         <?php endif; ?>
     </div>
 
+    <!-- BOUTON RETOUR -->
     <div class="retour-btn-container">
-        <a href="<?= htmlspecialchars($_SERVER['HTTP_REFERER'] ?? '/ecoride/index.php?page=home') ?>" class="retour-btn">← Retour</a>
+        <a href="<?= htmlspecialchars($_SERVER['HTTP_REFERER'] ?? '/ecoride/index.php?page=home') ?>"
+           class="retour-btn">← Retour</a>
     </div>
 </div>
 

@@ -14,7 +14,7 @@ if (!isset($_SESSION['utilisateur_id'])) {
 $utilisateur_id = $_SESSION['utilisateur_id'];
 $role_message = null;
 
-
+// Mise à jour profil
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $prenom = trim($_POST['prenom'] ?? '');
     $nom = trim($_POST['nom'] ?? '');
@@ -25,17 +25,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$prenom, $nom, $nouveau_role, $utilisateur_id]);
 
         $_SESSION['role'] = $nouveau_role;
-        $role_message = "✅ Votre profil a bien été mis à jour.";
+        $role_message = "Votre profil a bien été mis à jour.";
     }
 }
 
-
+// Récupération infos utilisateur
 $stmt = $pdo->prepare("SELECT prenom, nom, email, role FROM utilisateurs WHERE id = ?");
 $stmt->execute([$utilisateur_id]);
 $utilisateur = $stmt->fetch();
 $_SESSION['role'] = $utilisateur['role'];
 
-// Récupération des trajets uniquement si chauffeur ou passager_chauffeur
+// Récupération trajets si chauffeur
 $trajets = [];
 if (in_array($_SESSION['role'], ['chauffeur', 'passager_chauffeur'])) {
     $stmt_trajets = $pdo->prepare("SELECT * FROM trajets WHERE conducteur_id = ? ORDER BY date_depart DESC");
@@ -47,150 +47,192 @@ if (in_array($_SESSION['role'], ['chauffeur', 'passager_chauffeur'])) {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Mon profil - EcoRide</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <meta charset="UTF-8">
-    <title>Mon profil - EcoRide</title>
-    <link rel="stylesheet" href="../assets/style.css">
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #e6f2e6;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+    body {
+        font-family: "Poppins", sans-serif;
+        background: #e8f5e9;
+        margin: 0;
+        padding: 0;
+    }
 
-        .centered-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            color: #2e7d32;
-        }
+    .profil-container {
+        max-width: 750px;
+        margin: 3rem auto;
+        background: white;
+        padding: 3rem 3rem 2rem;
+        border-radius: 20px;
+        border-left: 6px solid #4caf50;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
 
-        .profil-section {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
+    .profil-container h2 {
+        font-size: 2.3rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        color: #2e7d32;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+    .form-group {
+        margin-bottom: 1.4rem;
+    }
 
-        .form-group label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
+    .form-group label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 6px;
+    }
 
-        .form-group input,
-        select {
-            padding: 0.6rem;
-            width: 100%;
-            max-width: 400px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 0.9rem;
+        border: 1px solid #cfcfcf;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
 
-        button[type="submit"] {
-            background-color: #2e7d32;
-            color: white;
-            padding: 0.6rem 1.2rem;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background 0.3s ease;
-        }
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: #4caf50;
+        outline: none;
+    }
 
-        button[type="submit"]:hover {
-            background-color: #256b2f;
-        }
+    .btn-submit {
+        width: 100%;
+        margin-top: 1rem;
+        padding: 0.9rem;
+        background: #2e7d32;
+        border: none;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
 
-        .action-buttons-container {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 1.2rem;
-            margin: 2rem 0;
-        }
+    .btn-submit:hover {
+        background: #276b2b;
+    }
 
-        .action-button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 0.8rem 1.6rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            text-align: center;
-            min-width: 200px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: background-color 0.3s ease;
-        }
+    .msg-success {
+        background: #e1f7e7;
+        color: #2e7d32;
+        border-left: 6px solid #4caf50;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+    }
 
-        .action-button:hover {
-            background-color: #388e3c;
-        }
+    hr {
+        margin: 2.5rem 0;
+        border: none;
+        border-top: 1px solid #ddd;
+    }
 
-        .bloc-trajet {
-            background: #f9f9f9;
-            border-left: 5px solid #4CAF50;
-            border-radius: 10px;
-            padding: 1rem;
-            margin: 1rem 0;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
 
-        .bloc-trajet p {
-            margin: 0.3rem 0;
-        }
+    .action-button {
+        padding: 0.9rem 1.4rem;
+        background: #4caf50;
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 12px;
+        min-width: 200px;
+        text-align: center;
+        transition: 0.2s;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    }
 
-        h3 {
-            margin-top: 2rem;
-            color: #2e7d32;
-        }
-    </style>
+    .action-button:hover {
+        background: #3d8f41;
+    }
+
+    .trajet-card {
+        background: #f6fdf7;
+        padding: 1.2rem;
+        border-radius: 15px;
+        border-left: 5px solid #4caf50;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+
+    .trajet-card p {
+        margin: 0.3rem 0;
+    }
+
+    .trajet-card form button {
+        background: #2e7d32;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-right: 0.5rem;
+    }
+
+    .trajet-card form button:hover {
+        background: #276b2b;
+    }
+</style>
 </head>
+
 <body>
 
-<section class="profil-section">
-    <h2 class="centered-title">👤 Mon profil</h2>
+<div class="profil-container">
+
+    <h2>👤 Mon profil</h2>
+
+    <?php if ($role_message): ?>
+        <div class="msg-success"><?= $role_message ?></div>
+    <?php endif; ?>
 
     <form method="POST">
+
         <div class="form-group">
-            <label for="prenom">Prénom :</label>
-            <input type="text" name="prenom" id="prenom" value="<?= htmlspecialchars($utilisateur['prenom']) ?>" required>
+            <label>Prénom :</label>
+            <input type="text" name="prenom" value="<?= htmlspecialchars($utilisateur['prenom']) ?>" required>
         </div>
 
         <div class="form-group">
-            <label for="nom">Nom :</label>
-            <input type="text" name="nom" id="nom" value="<?= htmlspecialchars($utilisateur['nom']) ?>" required>
+            <label>Nom :</label>
+            <input type="text" name="nom" value="<?= htmlspecialchars($utilisateur['nom']) ?>" required>
         </div>
 
         <div class="form-group">
-            <label for="role">Je souhaite être :</label>
-            <select name="role" id="role">
-                <option value="utilisateur" <?= $_SESSION['role'] === 'utilisateur' ? 'selected' : '' ?>>Passager</option>
-                <option value="chauffeur" <?= $_SESSION['role'] === 'chauffeur' ? 'selected' : '' ?>>Chauffeur</option>
-                <option value="passager_chauffeur" <?= $_SESSION['role'] === 'passager_chauffeur' ? 'selected' : '' ?>>Les deux</option>
+            <label>Je souhaite être :</label>
+            <select name="role">
+                <option value="utilisateur" <?= $_SESSION['role']=='utilisateur'?'selected':'' ?>>Passager</option>
+                <option value="chauffeur" <?= $_SESSION['role']=='chauffeur'?'selected':'' ?>>Chauffeur</option>
+                <option value="passager_chauffeur" <?= $_SESSION['role']=='passager_chauffeur'?'selected':'' ?>>Les deux</option>
             </select>
         </div>
 
-        <button type="submit">💾 Mettre à jour</button>
-    </form>
+        <button type="submit" class="btn-submit">💾 Mettre à jour</button>
 
-    <?php if ($role_message): ?>
-        <p style="color: green; font-weight: bold;">✅ <?= $role_message ?></p>
-    <?php endif; ?>
+    </form>
 
     <hr>
 
-    <div class="action-buttons-container">
-        <?php if ($_SESSION['role'] === 'chauffeur' || $_SESSION['role'] === 'passager_chauffeur') : ?>
+    <div class="action-buttons">
+        <?php if ($_SESSION['role'] !== 'utilisateur'): ?>
             <a href="index.php?page=devenir_chauffeur" class="action-button">🚗 Ajouter un véhicule</a>
             <a href="index.php?page=saisir_trajet" class="action-button">🛣️ Proposer un trajet</a>
         <?php endif; ?>
@@ -199,38 +241,42 @@ if (in_array($_SESSION['role'], ['chauffeur', 'passager_chauffeur'])) {
     </div>
 
     <?php if (!empty($trajets)): ?>
-        <h3>🚗 Mes trajets proposés</h3>
+        <h3 style="margin-top: 2rem; color:#2e7d32;">🚗 Mes trajets proposés</h3>
+
         <?php foreach ($trajets as $trajet): ?>
-            <div class="bloc-trajet">
+            <div class="trajet-card">
                 <p><strong>Départ :</strong> <?= htmlspecialchars($trajet['ville_depart']) ?></p>
                 <p><strong>Arrivée :</strong> <?= htmlspecialchars($trajet['ville_arrivee']) ?></p>
                 <p><strong>Prix :</strong> <?= htmlspecialchars($trajet['prix']) ?> crédits</p>
                 <p><strong>État :</strong>
                     <?= match ($trajet['etat']) {
-                        'en_attente' => '🟡 En attente',
-                        'en_cours' => '🟠 En cours',
-                        'termine' => '✅ Terminé',
-                        'annule' => '❌ Annulé',
-                        default => htmlspecialchars($trajet['etat'])
+                        'en_attente' => "🟡 En attente",
+                        'en_cours' => "🟠 En cours",
+                        'termine' => "🟢 Terminé",
+                        'annule' => "🔴 Annulé",
+                        default => htmlspecialchars($trajet['etat']),
                     }; ?>
                 </p>
 
                 <?php if ($trajet['etat'] === 'en_attente'): ?>
-                    <form method="POST" action="index.php?page=action_trajet" style="display:inline;">
+                    <form method="POST" action="index.php?page=action_trajet">
                         <input type="hidden" name="trajet_id" value="<?= $trajet['id'] ?>">
                         <button name="action" value="demarrer">▶️ Démarrer</button>
-                        <button name="action" value="annuler" onclick="return confirm('Annuler ce trajet ?')">❌ Annuler</button>
+                        <button name="action" value="annuler">❌ Annuler</button>
                     </form>
+
                 <?php elseif ($trajet['etat'] === 'en_cours'): ?>
-                    <form method="POST" action="index.php?page=action_trajet" style="display:inline;">
+                    <form method="POST" action="index.php?page=action_trajet">
                         <input type="hidden" name="trajet_id" value="<?= $trajet['id'] ?>">
                         <button name="action" value="terminer">✅ Arrivée à destination</button>
                     </form>
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
+
     <?php endif; ?>
-</section>
+
+</div>
 
 </body>
 </html>
