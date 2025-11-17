@@ -1,5 +1,5 @@
 <?php
-$mysqli = new mysqli("localhost", "root", "", "ecoride", 3308);
+$mysqli = new mysqli("localhost", "root", "", "ecoride", 3307);
 
 
 if ($mysqli->connect_error) {

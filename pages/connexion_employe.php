@@ -5,23 +5,29 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once(__DIR__ . '/../includes/db.php');
 
-$erreur = null;
-
+$erreur = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email'] ?? '');
-    $motdepasse = $_POST['motdepasse'] ?? '';
 
-    
-    $stmt = $pdo->prepare("SELECT * FROM employes WHERE email = ?");
+    $email = trim($_POST['email']);
+    $motdepasse = trim($_POST['motdepasse']);
+
+    // Vérifier un employé valide
+    $stmt = $pdo->prepare("
+        SELECT * FROM utilisateurs 
+        WHERE email = ? AND role = 'employe' AND suspendu = 0
+    ");
     $stmt->execute([$email]);
-    $employe = $stmt->fetch();
+    $employe = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    
     if ($employe && password_verify($motdepasse, $employe['mot_de_passe'])) {
-        
+
+        session_unset();
+
+        // On stocke nom + prénom (plus sûr que username)
         $_SESSION['employe_id'] = $employe['id'];
-        $_SESSION['employe_nom'] = $employe['nom'];
+        $_SESSION['employe_nom'] = $employe['nom'] . ' ' . $employe['prenom'];
+
         header('Location: index.php?page=espace_employe');
         exit;
     } else {
@@ -30,95 +36,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<?php require_once(__DIR__ . '/../includes/nav.php'); ?>
 
-    <meta charset="UTF-8">
-    <title>Connexion Employé - EcoRide</title>
-</head>
-<body>
+<h2 style="text-align:center; margin-top:2rem; color:#2e7d32;">👷 Connexion Employé</h2>
 
-<div class="login-container">
-    <h2>👷 Connexion Employé</h2>
+<form method="POST" 
+      style="max-width:400px;margin:2rem auto;padding:1.5rem;background:#fff;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1);">
 
-    <?php if ($erreur): ?>
-        <div class="error-message"><?= htmlspecialchars($erreur) ?></div>
+    <label>Email :</label>
+    <input type="email" name="email" required
+           style="width:100%;padding:0.6rem;margin-bottom:1rem;border-radius:6px;border:1px solid #ccc;">
+
+    <label>Mot de passe :</label>
+    <input type="password" name="motdepasse" required
+           style="width:100%;padding:0.6rem;margin-bottom:1rem;border-radius:6px;border:1px solid #ccc;">
+
+    <button type="submit"
+            style="width:100%;padding:0.8rem;background:#2e7d32;color:white;border:none;border-radius:6px;">
+        Se connecter
+    </button>
+
+    <?php if (!empty($erreur)): ?>
+        <p style="text-align:center;color:red;margin-top:1rem;"><?= $erreur ?></p>
     <?php endif; ?>
 
-    <form method="POST" class="login-form">
-        <label for="email">📧 Email :</label>
-        <input type="email" id="email" name="email" required>
+</form>
 
-        <label for="motdepasse">🔒 Mot de passe :</label>
-        <input type="password" id="motdepasse" name="motdepasse" required>
-
-        <button type="submit">Se connecter</button>
-    </form>
-</div>
-
-<style>
-    body {
-        font-family: 'Segoe UI', sans-serif;
-        background-color: #eaf8e6;
-        margin: 0;
-        padding: 2rem;
-    }
-
-    .login-container {
-        max-width: 400px;
-        margin: 60px auto;
-        padding: 2rem;
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 0 10px rgba(0, 80, 0, 0.1);
-    }
-
-    .login-container h2 {
-        text-align: center;
-        color: #2e7d32;
-        margin-bottom: 1.5rem;
-    }
-
-    .login-form label {
-        display: block;
-        margin: 0.5rem 0 0.2rem;
-        font-weight: bold;
-    }
-
-    .login-form input {
-        width: 100%;
-        padding: 0.6rem;
-        margin-bottom: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-    }
-
-    .login-form button {
-        width: 100%;
-        padding: 0.7rem;
-        background-color: #2e7d32;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .login-form button:hover {
-        background-color: #1b5e20;
-    }
-
-    .error-message {
-        background-color: #ffdede;
-        color: #c62828;
-        padding: 0.8rem;
-        text-align: center;
-        border-radius: 6px;
-        margin-bottom: 1rem;
-    }
-</style>
-
-</body>
-</html>
+<?php require_once(__DIR__ . '/../includes/footer.php'); ?>

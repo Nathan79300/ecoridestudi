@@ -53,9 +53,7 @@ require_once __DIR__ . '/../includes/db.php';
 
         try {
 
-            /** ---------------------------------------------
-             *  REQUÊTE PRINCIPALE (corrigée)
-             * --------------------------------------------- */
+           
             $sql = "SELECT 
                         t.*, 
                         u.username AS pseudo, 
@@ -103,9 +101,7 @@ require_once __DIR__ . '/../includes/db.php';
             $stmt->execute($params);
             $resultats = $stmt->fetchAll();
 
-            /** ---------------------------------------------
-             *  SI AUCUN RESULTAT => PROCHAINE DATE
-             * --------------------------------------------- */
+            
             if (!$resultats) {
                 echo '<div class="no-results">';
                 echo "<p>😢 Aucun trajet trouvé à cette date.</p>";
@@ -145,9 +141,7 @@ require_once __DIR__ . '/../includes/db.php';
                 echo '</div>';
             }
 
-            /** ---------------------------------------------
-             *  AFFICHAGE DES RÉSULTATS
-             * --------------------------------------------- */
+           
             foreach ($resultats as $row) {
 
                 echo "<div class='trajet-card'>";

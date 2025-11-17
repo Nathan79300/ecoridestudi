@@ -13,7 +13,7 @@ include __DIR__ . '/../config.php';
   <meta charset="UTF-8">
   <title>EcoRide</title>
 
-  <!-- Chemin corrigé -->
+  
   <link rel="stylesheet" href="/ecoridestudi/ecoride/assets/style.css">
 </head>
 <body>

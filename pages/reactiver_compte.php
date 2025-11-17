@@ -8,7 +8,7 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 if (isset($_POST['id'])) {
-    $stmt = $pdo->prepare("UPDATE utilisateurs SET suspendu = 1 WHERE id = ?");
+    $stmt = $pdo->prepare("UPDATE utilisateurs SET suspendu = 0 WHERE id = ?");
     $stmt->execute([$_POST['id']]);
 }
 

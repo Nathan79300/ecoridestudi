@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EcoRide</title>
 
-  <!-- Chemin corrigé -->
+  
   <link rel="stylesheet" href="/ecoridestudi/ecoride/assets/style.css">
 </head>
 <body>
@@ -20,7 +20,7 @@
 
     <div class="footer-link">
 
-        <!-- Chemin corrigé -->
+       
         <a href="/ecoridestudi/ecoride/pages/mentions_legales.php">📄 Mentions légales</a>
     </div>
 </footer>
