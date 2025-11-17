@@ -29,7 +29,46 @@ $stmt->execute([$utilisateur_id]);
 $vehicules = $stmt->fetchAll();
 
 if (count($vehicules) === 0) {
-    echo "<p style='color: orange;'>🚗 Vous devez ajouter un véhicule avant de proposer un trajet. <a href='index.php?page=devenir_chauffeur'>Ajouter un véhicule</a></p>";
+    ?>
+    <div style="
+        max-width: 600px;
+        margin: 4rem auto;
+        background: #ffffff;
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-left: 6px solid #4CAF50;
+    ">
+
+        <div style="font-size: 50px; margin-bottom: 1rem;">🚗</div>
+
+        <h2 style="color:#2e7d32; margin-bottom: 1rem;">
+            Aucun véhicule détecté
+        </h2>
+
+        <p style="font-size: 1.1rem; color:#444; margin-bottom: 1.5rem;">
+            Pour proposer un trajet, vous devez d'abord enregistrer un véhicule sur votre compte.
+        </p>
+
+        <a href="index.php?page=devenir_chauffeur"
+        style="
+            display:inline-block;
+            background:#2e7d32;
+            color:white;
+            padding:0.8rem 1.4rem;
+            font-size:1rem;
+            border-radius:8px;
+            text-decoration:none;
+            transition:0.2s;
+        "
+        onmouseover="this.style.background='#256628'"
+        onmouseout="this.style.background='#2e7d32'">
+            ➕ Ajouter un véhicule
+        </a>
+
+    </div>
+    <?php
     exit;
 }
 

@@ -1,6 +1,10 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-if (basename(__FILE__) == basename($_SERVER['SCRIPT_FILENAME'])) {
-    http_response_code(403);
-    exit("Accès direct interdit 🚫");
+// Si l'utilisateur N'EST PAS connecté
+if (!isset($_SESSION['utilisateur_id'])) {
+    header("Location: index.php?page=connexion");
+    exit;
 }

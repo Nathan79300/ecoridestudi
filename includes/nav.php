@@ -32,10 +32,11 @@ require_once __DIR__ . '/../config.php';
 
     <div class="navbar_user">
 
-      <?php if (!empty($_SESSION['utilisateur_id'])): ?>
-        👋 <a href="<?= BASE_URL ?>index.php?page=profil"><?= htmlspecialchars($_SESSION['username']) ?></a> —
-        💳 <?= (int)$_SESSION['credits'] ?> crédits |
-        <a href="<?= BASE_URL ?>index.php?page=profil">Mon espace</a>
+     <?php if (isset($_SESSION['utilisateur_id'])): ?>
+    👋 <strong><?= htmlspecialchars($_SESSION['username']) ?></strong> — 
+    💳 <?= (int)$_SESSION['credits'] ?> crédits |
+    <a href="<?= BASE_URL ?>index.php?page=profil">Mon espace</a>
+
 
       <?php elseif (isset($_SESSION['admin_id'])): ?>
         👤 <strong><?= htmlspecialchars($_SESSION['admin_nom']) ?></strong> |

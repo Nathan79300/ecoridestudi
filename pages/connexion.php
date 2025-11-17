@@ -17,22 +17,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->execute([$email]);
     $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Vérification du mot de passe
     if ($utilisateur && password_verify($motdepasse, $utilisateur['mot_de_passe'])) {
 
-        // Stockage des infos en session
+        // Session utilisateur
         $_SESSION['utilisateur_id'] = $utilisateur['id'];
         $_SESSION['email'] = $utilisateur['email'];
-        $_SESSION['username'] = $utilisateur['username']; // ✔ Option A
+        $_SESSION['username'] = $utilisateur['pseudo'] ?: $utilisateur['username'];
         $_SESSION['credits'] = $utilisateur['credits'];
         $_SESSION['role'] = $utilisateur['role'];
 
-        // Redirection par rôle
-        if ($utilisateur['role'] === 'chauffeur') {
-            header("Location: index.php?page=profil");
-            exit;
-        }
-
-        header("Location: index.php?page=home");
+        header("Location: index.php?page=profil");
         exit;
 
     } else {
@@ -44,7 +39,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <h2 style="text-align:center; margin-top:2rem;">🔐 Connexion</h2>
 
 <form method="POST"
-      style="max-width:400px;margin:2rem auto;padding:1.5rem;background:#fff;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1);">
+      style="max-width:400px;margin:2rem auto;padding:1.5rem;background:#fff;border-radius:10px;
+             box-shadow:0 0 10px rgba(0,0,0,0.1);">
 
     <label>Email :</label>
     <input type="email" name="email" required
@@ -59,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         Se connecter
     </button>
 
-    <?php if ($erreur): ?>
+    <?php if (!empty($erreur)): ?>
         <p style="text-align:center;color:red;margin-top:1rem;"><?= $erreur ?></p>
     <?php endif; ?>
 
