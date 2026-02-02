@@ -1,7 +1,14 @@
-<link rel="stylesheet" href="../assets/style.css">
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ✅ Chemin CSS correct -->
+  <link rel="stylesheet" href="/ecoridestudi/ecoride/public/assets/style.css">
 </head>
+
+<body>
 
 <section class="accueil">
   <div class="hero">
@@ -9,13 +16,17 @@
       <span class="eco">🌍 Bienvenue sur Eco</span><span class="ride">Ride</span>
     </h1>
     <p>Le covoiturage écologique pour un monde plus vert !</p>
-    <a href="index.php?page=recherche" class="btn">🔍 Trouver un trajet</a>
+
+    <!-- ✅ si ton routing passe par /public/index.php -->
+    <a href="/ecoridestudi/ecoride/public/index.php?page=recherche" class="btn">
+      🔍 Trouver un trajet
+    </a>
   </div>
 
-  <!-- 🚗 CARROUSEL / IMAGES FIXÉES -->
+  <!-- ✅ IMAGES 1 -->
   <div class="container_img">
-    <img src="/ecoridestudi/ecoride/images/voiture1.jpg" class="carousel-img" alt="Voiture 1">
-    <img src="/ecoridestudi/ecoride/images/voiture2.jpg" class="carousel-img" alt="Voiture 2">
+    <img src="/ecoridestudi/ecoride/public/assets/images/voiture1.jpg" class="carousel-img" alt="Voiture 1">
+    <img src="/ecoridestudi/ecoride/public/assets/images/voiture2.jpg" class="carousel-img" alt="Voiture 2">
   </div>
 
   <p class="carousel-text-bubble">
@@ -24,10 +35,10 @@
     <strong>Rejoignez notre communauté d’éco-conducteurs engagés pour une mobilité plus responsable !</strong>
   </p>
 
-  <!-- 🚗 AUTRES IMAGES -->
+  <!-- ✅ IMAGES 2 -->
   <div class="container_2">
-    <img src="/ecoridestudi/ecoride/images/voiture3.webp" alt="Voiture 3">
-    <img src="/ecoridestudi/ecoride/images/voiture5.jpeg" alt="Voiture 4">
+    <img src="/ecoridestudi/ecoride/public/assets/images/voiture3.webp" alt="Voiture 3">
+    <img src="/ecoridestudi/ecoride/public/assets/images/voiture5.jpeg" alt="Voiture 4">
   </div>
 
   <div class="eco-message_ecoride">
@@ -38,18 +49,24 @@
     </p>
   </div>
 
+  <!-- ✅ FEATURES : on garde .feature -->
   <div class="features">
     <div class="feature">
       <h3>🚗 Économie</h3>
       <p>Réduisez vos frais de déplacement en partageant les trajets.</p>
     </div>
+
     <div class="feature">
       <h3>🌿 Écologie</h3>
       <p>Moins de voitures, moins de CO₂, plus d’air pur !</p>
     </div>
+
     <div class="feature">
       <h3>🤝 Communauté</h3>
       <p>Rencontrez des personnes partageant les mêmes trajets.</p>
     </div>
   </div>
 </section>
+
+</body>
+</html>

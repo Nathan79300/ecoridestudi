@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteBase /ecoridestudi/ecoride/public/
+
+# Si fichier ou dossier existe → on le laisse
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Sinon → index.php gère l’URL
+RewriteRule ^(.*)$ index.php?url=$1 [L,QSA]

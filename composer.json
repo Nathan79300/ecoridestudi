@@ -1,0 +1,9 @@
+{
+    "name": "natom/ecoride",
+    "autoload": {
+        "psr-4": {
+            "Natom\\Ecoride\\": "app/"
+        }
+    },
+    "require": {}
+}

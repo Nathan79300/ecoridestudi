@@ -1,0 +1,439 @@
+/* =========================================================
+   VARIABLES GLOBALES + RESET
+========================================================= */
+:root {
+    --main-green: #2ecc71;
+    --main-green-light: #a7f0c4;
+    --dark-green: #27ae60;
+    --light-gray: #f7f7f7;
+    --text-dark: #333;
+    --text-light: #666;
+    --white: #fff;
+    --border-radius: 10px;
+    --shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    background: var(--light-gray);
+    color: var(--text-dark);
+    overflow-x: hidden; /* stop scroll horizontal */
+}
+
+/* garde-fou images */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* =========================================================
+   LAYOUT GLOBAL (layout.php)
+========================================================= */
+.main-container {
+    width: min(1200px, 100%);
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* =========================================================
+   NAVBAR (partials/nav.php)
+========================================================= */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 14px 22px;
+    background: var(--main-green-light);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.navbar_title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: inherit;
+}
+
+.navbar_title img {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+}
+
+.navbar_title h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.navbar .eco { color: var(--dark-green); }
+.navbar .ride { color: var(--text-dark); }
+
+.burger {
+    display: none;
+    border: none;
+    background: var(--dark-green);
+    color: var(--white);
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+}
+
+.navbar_menu {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.navbar_menu ul {
+    display: flex;
+    list-style: none;
+    gap: 18px;
+    align-items: center;
+}
+
+.navbar_menu a {
+    color: var(--text-dark);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.navbar_menu a:hover {
+    color: var(--dark-green);
+}
+
+.green-text {
+    color: var(--dark-green);
+}
+
+.navbar_user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 14px;
+}
+
+.navbar_user a {
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* =========================================================
+   HOMEPAGE - HERO SECTION
+========================================================= */
+.hero {
+    /* image de fond : chemin RELATIF depuis public/assets/style.css
+       -> donc l'image doit être dans public/assets/images/terre6.jpeg */
+    background: url("images/terre6.jpeg") center/cover no-repeat;
+    background-color: #1e8d4f; /* fallback si image pas trouvée */
+
+    padding: 80px 40px;
+    text-align: center;
+    color: var(--white);
+    border-radius: 0 0 30px 30px;
+
+    position: relative;
+}
+
+/* overlay pour rendre le texte lisible */
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    border-radius: 0 0 30px 30px;
+}
+
+.hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+.hero h1 {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    font-size: 20px;
+    opacity: 0.95;
+}
+
+/* bouton (utilisé dans home.php) */
+.btn {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 12px 18px;
+    background: var(--dark-green);
+    color: var(--white);
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: var(--shadow);
+}
+
+.btn:hover {
+    background: #1e8d4f;
+}
+
+/* =========================================================
+   HOME - LAYOUT (HTML accueil)
+========================================================= */
+.accueil {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.container_img,
+.container_2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 30px 0;
+}
+
+/* images dans containers */
+.container_img img,
+.container_2 img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+/* bulle texte + message */
+.carousel-text-bubble,
+.eco-message_ecoride {
+    background: var(--white);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin: 20px 0;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   CAROUSEL (si utilisé ailleurs)
+========================================================= */
+.carousel {
+    width: 100%;
+    margin: 40px auto;
+    overflow: hidden;
+}
+
+.carousel img {
+    width: 100%;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+/* =========================================================
+   FEATURES
+========================================================= */
+.features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    padding: 40px 0;
+}
+
+.feature {
+    background: var(--white);
+    padding: 25px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.feature h3 {
+    margin-bottom: 10px;
+    color: var(--dark-green);
+}
+
+/* =========================================================
+   FORMULAIRES (connexion, inscription, recherche, etc)
+========================================================= */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: var(--white);
+    padding: 25px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    max-width: 500px;
+    margin: 20px auto;
+}
+
+form label {
+    font-weight: 700;
+}
+
+input, select {
+    padding: 12px;
+    border-radius: var(--border-radius);
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 12px;
+    background: var(--dark-green);
+    border: none;
+    color: var(--white);
+    font-size: 16px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+button:hover {
+    background: #1e8d4f;
+}
+
+/* =========================================================
+   CARDS DE TRAJETS
+========================================================= */
+.trajet-card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+}
+
+.trajet-card.prochain {
+    border-left: 8px solid var(--dark-green);
+}
+
+/* =========================================================
+   PROFIL UTILISATEUR
+========================================================= */
+.msg-success {
+    background: var(--main-green-light);
+    padding: 12px;
+    border-radius: var(--border-radius);
+    color: var(--dark-green);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* =========================================================
+   ADMIN + EMPLOYÉS
+========================================================= */
+.admin-section {
+    padding: 30px;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+footer,
+.footer {
+    margin-top: 50px;
+    padding: 20px;
+    text-align: center;
+    background: var(--main-green-light);
+}
+
+footer a,
+.footer a {
+    color: var(--text-dark);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+footer a:hover,
+.footer a:hover {
+    color: var(--dark-green);
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN
+========================================================= */
+@media (max-width: 900px) {
+    .features {
+        grid-template-columns: 1fr;
+    }
+
+    .container_img,
+    .container_2 {
+        grid-template-columns: 1fr;
+    }
+
+    .container_img img,
+    .container_2 img {
+        height: 240px;
+    }
+}
+
+@media (max-width: 780px) {
+    .burger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* menu devient un panneau déroulant */
+    .navbar_menu {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 14px 0 6px;
+    }
+
+    .navbar_menu.active {
+        display: flex;
+    }
+
+    .navbar_menu ul {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .navbar_user {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero {
+        padding: 60px 18px;
+    }
+
+    .hero h1 {
+        font-size: 34px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .navbar_title h1 {
+        font-size: 20px;
+    }
+}
