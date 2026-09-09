@@ -5,10 +5,17 @@ define('DB_NAME', 'ecoride');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
-$server = $_SERVER['SERVER_NAME'] ?? '';
+$host = $_SERVER['HTTP_HOST'] ?? '';
 
-if (in_array($server, ['localhost', '127.0.0.1'], true)) {
+if (
+    $host === 'localhost' ||
+    str_starts_with($host, 'localhost:') ||
+    $host === '127.0.0.1' ||
+    str_starts_with($host, '127.0.0.1:')
+) {
+    // SITE EN LOCAL
     define('BASE_URL', '/ecoridestudi/ecoride/');
 } else {
+    // SITE SUR RENDER
     define('BASE_URL', '/');
 }
