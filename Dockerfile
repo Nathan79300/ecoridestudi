@@ -13,8 +13,8 @@ RUN composer install --no-dev --optimize-autoloader
 
 RUN printf '%s\n' \
     '<VirtualHost *:80>' \
-    '    DocumentRoot /var/www/html/ecoride/public' \
-    '    <Directory /var/www/html/ecoride/public>' \
+    '    DocumentRoot /var/www/html/public' \
+    '    <Directory /var/www/html/public>' \
     '        AllowOverride All' \
     '        Require all granted' \
     '    </Directory>' \
