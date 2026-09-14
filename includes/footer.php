@@ -1,8 +1,5 @@
 <?php
-// Sécurité si jamais $BASE_URL n'est pas défini
-if (!isset($BASE_URL)) {
-    $BASE_URL = "/ecoridestudi/ecoride/public";
-}
+require_once __DIR__ . '/../config.php';
 ?>
 
 <footer class="site-footer">
@@ -13,13 +10,13 @@ if (!isset($BASE_URL)) {
     </p>
 
     <div class="footer-links">
-      <a href="<?= $BASE_URL ?>/index.php?url=mentions">
+      <a href="<?= BASE_URL ?>index.php?url=mentions">
         📄 Mentions légales
       </a>
 
       <span class="sep">•</span>
 
-      <a href="<?= $BASE_URL ?>/index.php?url=cgu">
+      <a href="<?= BASE_URL ?>index.php?url=cgu">
         📜 CGU
       </a>
     </div>

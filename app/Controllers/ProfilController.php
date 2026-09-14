@@ -6,6 +6,8 @@ use Natom\Ecoride\Core\Controller;
 use Natom\Ecoride\Models\User;
 use Natom\Ecoride\Models\Trajet;
 
+require_once __DIR__ . "/../../config.php";
+
 class ProfilController extends Controller
 {
     public function index(): void
@@ -16,7 +18,7 @@ class ProfilController extends Controller
 
         // Sécurité : empêcher l’accès si non connecté
         if (!isset($_SESSION['utilisateur_id'])) {
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=connexion");
+            header("Location: " . BASE_URL . "index.php?url=connexion");
             exit;
         }
 

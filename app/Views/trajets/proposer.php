@@ -1,5 +1,8 @@
+```php
 <?php
 // app/Views/trajets/proposer.php
+
+require_once __DIR__ . "/../../../config.php";
 ?>
 
 <section class="proposer-page">
@@ -10,7 +13,7 @@
       <p class="proposer-subtitle">Renseignez les informations ci-dessous pour publier votre covoiturage.</p>
     </div>
 
-    <a class="btn btn-outline proposer-back" href="/ecoridestudi/ecoride/public/index.php?url=profil">
+    <a class="btn btn-outline proposer-back" href="<?= BASE_URL ?>index.php?url=profil">
       ← Retour au profil
     </a>
 
@@ -70,7 +73,9 @@
           <span class="switch-text">Voyage écologique seulement</span>
         </label>
 
-        <button type="submit" class="btn btn-wide proposer-submit">✅ Créer le trajet</button>
+        <button type="submit" class="btn btn-wide proposer-submit">
+          ✅ Créer le trajet
+        </button>
       </form>
     </div>
 
@@ -168,3 +173,4 @@
 
   refreshPreview();
 </script>
+```

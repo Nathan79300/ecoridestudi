@@ -14,7 +14,7 @@ if (
     str_starts_with($host, '127.0.0.1:')
 ) {
     // SITE EN LOCAL
-    define('BASE_URL', '/ecoridestudi/ecoride/');
+    define('BASE_URL', '/ecoridestudi/ecoride/public/');
 } else {
     // SITE SUR RENDER
     define('BASE_URL', '/');

@@ -5,6 +5,8 @@ namespace Natom\Ecoride\Controllers;
 use Natom\Ecoride\Core\Controller;
 use Natom\Ecoride\Models\User;
 
+require_once __DIR__ . "/../../config.php";
+
 class AuthController extends Controller
 {
     /**
@@ -29,7 +31,7 @@ class AuthController extends Controller
                 $_SESSION['utilisateur_id'] = $utilisateur['id'];
                 $_SESSION['role']           = $utilisateur['role'];
 
-                header("Location: /ecoridestudi/ecoride/public/profil");
+                header("Location: " . BASE_URL . "index.php?url=profil");
                 exit;
             }
 
@@ -74,7 +76,7 @@ class AuthController extends Controller
                     $userModel->createUser($prenom, $nom, $email, $password);
 
                     // Redirection vers connexion
-                    header("Location: /ecoridestudi/ecoride/public/connexion");
+                    header("Location: " . BASE_URL . "index.php?url=connexion");
                     exit;
                 }
             }
@@ -95,7 +97,8 @@ class AuthController extends Controller
     {
         session_start();
         session_destroy();
-        header("Location: /ecoridestudi/ecoride/public/connexion");
+
+        header("Location: " . BASE_URL . "index.php?url=connexion");
         exit;
     }
 }

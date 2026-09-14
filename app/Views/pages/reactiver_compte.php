@@ -3,8 +3,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once __DIR__ . '/../../../config.php';
+
 if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? null) !== 'admin') {
-    header('Location: /ecoridestudi/ecoride/public/index.php?url=connexionAdmin');
+    header('Location: ' . BASE_URL . 'index.php?url=connexionAdmin');
     exit;
 }
 
@@ -48,27 +50,36 @@ $users = $pdo->query("
                         <td style="padding:.6rem;"><?= htmlspecialchars($u['email'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                         <td style="padding:.6rem;"><?= htmlspecialchars($u['role'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                         <td style="padding:.6rem;">
-                            <form method="POST" action="/ecoridestudi/ecoride/public/index.php?url=traiterSuspension" class="form-suspension" style="margin:0;">
+                            <form
+                                method="POST"
+                                action="<?= BASE_URL ?>index.php?url=traiterSuspension"
+                                class="form-suspension"
+                                style="margin:0;"
+                            >
                                 <input type="hidden" name="id" value="<?= (int)$u['id'] ?>">
                                 <input type="hidden" name="action" value="reactiver">
-                                <button
-                                    type="submit"
-                                    class="btn-suspendre"
-                                    style="background:#2e7d32; color:#fff; border:none; padding:.45rem .8rem; border-radius:6px; cursor:pointer;"
-                                >
-                                    Réactiver
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php endif; ?>
 
-    <p style="text-align:center; margin-top:1rem;">
-        <a href="/ecoridestudi/ecoride/public/index.php?url=admin">⬅ Retour espace admin</a>
-    </p>
+```
+                            <button
+                                type="submit"
+                                class="btn-suspendre"
+                                style="background:#2e7d32; color:#fff; border:none; padding:.45rem .8rem; border-radius:6px; cursor:pointer;"
+                            >
+                                Réactiver
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+<?php endif; ?>
+
+<p style="text-align:center; margin-top:1rem;">
+    <a href="<?= BASE_URL ?>index.php?url=admin">⬅ Retour espace admin</a>
+</p>
+```
+
 </div>
 
-<script src="/ecoridestudi/ecoride/public/assets/js/admin.js"></script>
+<script src="<?= BASE_URL ?>assets/js/admin.js"></script>

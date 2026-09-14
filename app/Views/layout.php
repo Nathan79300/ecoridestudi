@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$BASE_URL = "/ecoridestudi/ecoride/public";
+require_once __DIR__ . "/../../config.php";
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -11,7 +11,7 @@ $BASE_URL = "/ecoridestudi/ecoride/public";
     <meta charset="UTF-8">
     <title><?= $title ?? "EcoRide" ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="<?= $BASE_URL ?>/assets/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/style.css">
 </head>
 
 <body>

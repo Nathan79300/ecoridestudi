@@ -8,6 +8,8 @@ use Natom\Ecoride\Models\Participation;
 use Natom\Ecoride\Models\Avis;
 use Natom\Ecoride\Models\User;
 
+require_once __DIR__ . "/../../config.php";
+
 class TrajetController extends Controller
 {
     public function proposer()
@@ -17,12 +19,12 @@ class TrajetController extends Controller
         }
 
         if (!isset($_SESSION['utilisateur_id'])) {
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=connexion");
+            header("Location: " . BASE_URL . "index.php?url=connexion");
             exit;
         }
 
         if (!in_array($_SESSION['role'], ['chauffeur', 'passager_chauffeur'], true)) {
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=profil");
+            header("Location: " . BASE_URL . "index.php?url=profil");
             exit;
         }
 
@@ -143,12 +145,12 @@ class TrajetController extends Controller
         }
 
         if (!isset($_SESSION['utilisateur_id'])) {
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=connexion");
+            header("Location: " . BASE_URL . "index.php?url=connexion");
             exit;
         }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['trajet_id'])) {
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=recherche");
+            header("Location: " . BASE_URL . "index.php?url=recherche");
             exit;
         }
 
@@ -160,21 +162,22 @@ class TrajetController extends Controller
         $userModel   = new User();
 
         $trajet = $trajetModel->getById($trajetId);
+
         if (!$trajet) {
             $_SESSION['flash_error'] = "Trajet introuvable.";
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=recherche");
+            header("Location: " . BASE_URL . "index.php?url=recherche");
             exit;
         }
 
         if ($partModel->dejaReserve($trajetId, $userId)) {
             $_SESSION['flash_error'] = "Vous avez déjà réservé ce trajet.";
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=details&id=$trajetId");
+            header("Location: " . BASE_URL . "index.php?url=details&id=$trajetId");
             exit;
         }
 
         if (!$trajetModel->aDesPlaces($trajetId)) {
             $_SESSION['flash_error'] = "Ce trajet est complet.";
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=details&id=$trajetId");
+            header("Location: " . BASE_URL . "index.php?url=details&id=$trajetId");
             exit;
         }
 
@@ -183,20 +186,20 @@ class TrajetController extends Controller
 
         if ($creditsAvant < $prix) {
             $_SESSION['flash_error'] = "Crédits insuffisants pour réserver ce trajet.";
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=details&id=$trajetId");
+            header("Location: " . BASE_URL . "index.php?url=details&id=$trajetId");
             exit;
         }
 
         if (!$userModel->debitCredits($userId, $prix)) {
             $_SESSION['flash_error'] = "Impossible de débiter vos crédits.";
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=details&id=$trajetId");
+            header("Location: " . BASE_URL . "index.php?url=details&id=$trajetId");
             exit;
         }
 
         if (!$partModel->reserver($trajetId, $userId)) {
             $userModel->crediterCredits($userId, $prix);
             $_SESSION['flash_error'] = "Impossible d'enregistrer la réservation.";
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=details&id=$trajetId");
+            header("Location: " . BASE_URL . "index.php?url=details&id=$trajetId");
             exit;
         }
 
@@ -204,14 +207,14 @@ class TrajetController extends Controller
             $partModel->annuler($trajetId, $userId);
             $userModel->crediterCredits($userId, $prix);
             $_SESSION['flash_error'] = "Impossible de réserver : plus de place.";
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=details&id=$trajetId");
+            header("Location: " . BASE_URL . "index.php?url=details&id=$trajetId");
             exit;
         }
 
         $_SESSION['credits'] = $userModel->getCreditsById($userId);
         $_SESSION['flash_success'] = "✅ Réservation confirmée ! (-$prix crédits)";
 
-        header("Location: /ecoridestudi/ecoride/public/index.php?url=details&id=$trajetId");
+        header("Location: " . BASE_URL . "index.php?url=details&id=$trajetId");
         exit;
     }
 
@@ -222,12 +225,12 @@ class TrajetController extends Controller
         }
 
         if (!isset($_SESSION['utilisateur_id'])) {
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=connexion");
+            header("Location: " . BASE_URL . "index.php?url=connexion");
             exit;
         }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['trajet_id'])) {
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=recherche");
+            header("Location: " . BASE_URL . "index.php?url=recherche");
             exit;
         }
 
@@ -239,15 +242,16 @@ class TrajetController extends Controller
         $userModel   = new User();
 
         $trajet = $trajetModel->getById($trajetId);
+
         if (!$trajet) {
             $_SESSION['flash_error'] = "Trajet introuvable.";
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=recherche");
+            header("Location: " . BASE_URL . "index.php?url=recherche");
             exit;
         }
 
         if (!$partModel->dejaReserve($trajetId, $userId)) {
             $_SESSION['flash_error'] = "Vous n'avez pas de réservation sur ce trajet.";
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=details&id=$trajetId");
+            header("Location: " . BASE_URL . "index.php?url=details&id=$trajetId");
             exit;
         }
 
@@ -255,7 +259,7 @@ class TrajetController extends Controller
 
         if (!$partModel->annuler($trajetId, $userId)) {
             $_SESSION['flash_error'] = "Impossible d'annuler la réservation.";
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=details&id=$trajetId");
+            header("Location: " . BASE_URL . "index.php?url=details&id=$trajetId");
             exit;
         }
 
@@ -265,7 +269,7 @@ class TrajetController extends Controller
         $_SESSION['credits'] = $userModel->getCreditsById($userId);
         $_SESSION['flash_success'] = "❌ Réservation annulée. +$prix crédits remboursés.";
 
-        header("Location: /ecoridestudi/ecoride/public/index.php?url=details&id=$trajetId");
+        header("Location: " . BASE_URL . "index.php?url=details&id=$trajetId");
         exit;
     }
 
@@ -278,7 +282,7 @@ class TrajetController extends Controller
         }
 
         if (!isset($_SESSION['utilisateur_id'])) {
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=connexion");
+            header("Location: " . BASE_URL . "index.php?url=connexion");
             exit;
         }
 
@@ -300,12 +304,12 @@ class TrajetController extends Controller
         }
 
         if (!isset($_SESSION['utilisateur_id'])) {
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=connexion");
+            header("Location: " . BASE_URL . "index.php?url=connexion");
             exit;
         }
 
         if (!in_array($_SESSION['role'] ?? '', ['chauffeur', 'passager_chauffeur'], true)) {
-            header("Location: /ecoridestudi/ecoride/public/index.php?url=profil");
+            header("Location: " . BASE_URL . "index.php?url=profil");
             exit;
         }
 
