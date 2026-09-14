@@ -1,4 +1,3 @@
-```php
 <?php
 
 /*
@@ -12,9 +11,6 @@
  *
  * PRODUCTION :
  * Render + Aiven MySQL
- *
- * Sur Render, la présence de DB_PASSWORD permet de détecter
- * automatiquement l'environnement de production.
  */
 
 
@@ -64,7 +60,7 @@ else {
     // Utilisateur Aiven
     $dbUser = 'avnadmin';
 
-    // Mot de passe enregistré dans les variables
+    // Mot de passe stocké dans les variables
     // d'environnement de Render
     $dbPass = getenv('DB_PASSWORD');
 
@@ -76,9 +72,7 @@ else {
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 
-        // Aiven impose une connexion SSL.
-        // La vérification du certificat est désactivée ici
-        // pour éviter un problème de certificat sur Render.
+        // Connexion SSL nécessaire pour Aiven
         PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
     ];
 }
@@ -104,4 +98,3 @@ try {
         . $e->getMessage()
     );
 }
-```
