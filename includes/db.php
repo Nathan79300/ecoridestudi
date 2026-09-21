@@ -1,3 +1,4 @@
+
 <?php
 
 /*
@@ -8,6 +9,9 @@
  * LOCAL :
  * XAMPP / MariaDB
  * localhost:3307
+ *
+ * DOCKER :
+ * MySQL XAMPP accessible via host.docker.internal:3307
  *
  * PRODUCTION :
  * Render + Aiven MySQL
@@ -27,12 +31,15 @@ $isLocal = !empty($_SERVER['SERVER_NAME'])
 
 
 // ============================================================
-// CONFIGURATION LOCALE - XAMPP
+// CONFIGURATION LOCALE - XAMPP / DOCKER
 // ============================================================
 
 if ($isLocal) {
 
-    $dbHost = 'localhost';
+    // XAMPP : localhost
+    // Docker : host.docker.internal
+    $dbHost = getenv('DB_HOST') ?: 'localhost';
+
     $dbName = 'ecoride';
     $dbUser = 'root';
     $dbPass = '';
@@ -98,3 +105,4 @@ try {
         . $e->getMessage()
     );
 }
+

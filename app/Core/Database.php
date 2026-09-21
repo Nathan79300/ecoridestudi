@@ -7,83 +7,60 @@ use PDOException;
 
 class Database
 {
-    private static ?PDO $pdo = null;
+    private static ?PDO $connection = null;
 
     public static function getConnection(): PDO
     {
-        if (self::$pdo === null) {
+        if (self::$connection === null) {
+            $server = $_SERVER['SERVER_NAME'] ?? '';
+
+            $isLocal = in_array(
+                $server,
+                ['localhost', '127.0.0.1'],
+                true
+            );
+
+            if ($isLocal) {
+                $dbHost = getenv('DB_HOST') ?: 'localhost';
+                $dbName = 'ecoride';
+                $dbUser = 'root';
+                $dbPass = '';
+                $dbPort = 3307;
+
+                $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
+
+                $options = [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                ];
+            } else {
+                $dbHost = 'ecoride-db-nat-753a.l.aivencloud.com';
+                $dbName = 'defaultdb';
+                $dbUser = 'avnadmin';
+                $dbPass = getenv('DB_PASSWORD');
+                $dbPort = 20257;
+
+                $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
+
+                $options = [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+                ];
+            }
+
             try {
-
-                // Détection de l'environnement
-                $isLocal = !empty($_SERVER['SERVER_NAME'])
-                    && in_array(
-                        $_SERVER['SERVER_NAME'],
-                        ['localhost', '127.0.0.1'],
-                        true
-                    );
-
-
-                // ============================================================
-                // LOCAL - XAMPP
-                // ============================================================
-
-                if ($isLocal) {
-
-                    $dsn = "mysql:host=localhost;port=3307;dbname=ecoride;charset=utf8mb4";
-
-                    $user = "root";
-                    $password = "";
-
-                    $options = [
-                        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                        PDO::ATTR_EMULATE_PREPARES   => false,
-                    ];
-
-                }
-
-
-                // ============================================================
-                // PRODUCTION - RENDER + AIVEN
-                // ============================================================
-
-                else {
-
-                    $dsn = "mysql:host=ecoride-db-nat-753a.l.aivencloud.com;port=20257;dbname=defaultdb;charset=utf8mb4";
-
-                    $user = "avnadmin";
-                    $password = getenv('DB_PASSWORD');
-
-                    $options = [
-                        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                        PDO::ATTR_EMULATE_PREPARES   => false,
-
-                        // SSL Aiven
-                        PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
-                    ];
-                }
-
-
-                // ============================================================
-                // CONNEXION
-                // ============================================================
-
-                self::$pdo = new PDO(
+                self::$connection = new PDO(
                     $dsn,
-                    $user,
-                    $password,
+                    $dbUser,
+                    $dbPass,
                     $options
                 );
-
-                self::$pdo->exec("SET NAMES utf8mb4");
-
             } catch (PDOException $e) {
-
                 die("Erreur connexion DB : " . $e->getMessage());
             }
         }
 
-        return self::$pdo;
+        return self::$connection;
     }
 }
