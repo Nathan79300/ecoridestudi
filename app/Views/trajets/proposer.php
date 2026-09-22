@@ -1,4 +1,4 @@
-```php
+
 <?php
 // app/Views/trajets/proposer.php
 
@@ -173,4 +173,4 @@ require_once __DIR__ . "/../../../config.php";
 
   refreshPreview();
 </script>
-```
+

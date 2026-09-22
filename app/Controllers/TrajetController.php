@@ -3,6 +3,7 @@
 namespace Natom\Ecoride\Controllers;
 
 use Natom\Ecoride\Core\Controller;
+use Natom\Ecoride\Core\ActivityLogger;
 use Natom\Ecoride\Models\Trajet;
 use Natom\Ecoride\Models\Participation;
 use Natom\Ecoride\Models\Avis;
@@ -50,6 +51,7 @@ class TrajetController extends Controller
         $this->render('trajets/proposer', ['message' => $message]);
     }
 
+
     public function recherche()
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -77,8 +79,31 @@ class TrajetController extends Controller
             $trajetModel = new Trajet();
             $resultats = $trajetModel->rechercheComplete($params);
 
+            // Journalisation de la recherche dans MongoDB
+            try {
+                ActivityLogger::log(
+                    'recherche_trajet',
+                    isset($_SESSION['utilisateur_id'])
+                        ? (int)$_SESSION['utilisateur_id']
+                        : null,
+                    [
+                        'depart' => $params['ville_depart'],
+                        'arrivee' => $params['ville_arrivee'],
+                        'date_depart' => $params['date_depart'],
+                        'passagers' => $params['passagers'],
+                        'ecologique' => $params['ecologique'],
+                        'prix_max' => $params['prix_max'],
+                        'note_min' => $params['note_min'],
+                        'nombre_resultats' => count($resultats)
+                    ]
+                );
+            } catch (\Throwable $e) {
+                // Une erreur MongoDB ne doit pas bloquer la recherche
+            }
+
             if (empty($resultats)) {
                 $noResults = true;
+
                 $prochain = $trajetModel->searchNext(
                     $params['ville_depart'],
                     $params['ville_arrivee'],
@@ -94,6 +119,7 @@ class TrajetController extends Controller
             'hasSearch' => $hasSearch
         ]);
     }
+
 
     public function details()
     {
@@ -123,9 +149,13 @@ class TrajetController extends Controller
         $avisList    = $conducteurId > 0 ? $avisModel->getValidatedByConducteur($conducteurId, 10) : [];
 
         $alreadyReserved = false;
+
         if (!empty($_SESSION['utilisateur_id'])) {
             $participationModel = new Participation();
-            $alreadyReserved = $participationModel->dejaReserve((int)$trajet['id'], (int)$_SESSION['utilisateur_id']);
+            $alreadyReserved = $participationModel->dejaReserve(
+                (int)$trajet['id'],
+                (int)$_SESSION['utilisateur_id']
+            );
         }
 
         $this->render('trajets/details', [
@@ -137,6 +167,7 @@ class TrajetController extends Controller
             'alreadyReserved' => $alreadyReserved
         ]);
     }
+
 
     public function reserver()
     {
@@ -218,6 +249,7 @@ class TrajetController extends Controller
         exit;
     }
 
+
     public function annulerReservation()
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -274,7 +306,6 @@ class TrajetController extends Controller
     }
 
 
-
     public function mesReservations()
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -288,7 +319,6 @@ class TrajetController extends Controller
 
         $userId = (int)$_SESSION['utilisateur_id'];
 
-        
         $participationModel = new Participation();
         $reservations = $participationModel->getReservationsByUser($userId);
 
@@ -296,6 +326,7 @@ class TrajetController extends Controller
             'reservations' => $reservations
         ]);
     }
+
 
     public function mesTrajets()
     {

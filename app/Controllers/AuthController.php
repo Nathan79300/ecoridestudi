@@ -3,6 +3,7 @@
 namespace Natom\Ecoride\Controllers;
 
 use Natom\Ecoride\Core\Controller;
+use Natom\Ecoride\Core\ActivityLogger;
 use Natom\Ecoride\Models\User;
 
 require_once __DIR__ . "/../../config.php";
@@ -20,7 +21,7 @@ class AuthController extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $email = trim($_POST['email'] ?? '');
-            $password = trim($_POST['password'] ?? '');
+            $password = trim($_POST['motdepasse'] ?? '');
 
             $userModel = new User();
             $utilisateur = $userModel->getByEmail($email);
@@ -29,7 +30,20 @@ class AuthController extends Controller
 
                 // Connexion réussie
                 $_SESSION['utilisateur_id'] = $utilisateur['id'];
-                $_SESSION['role']           = $utilisateur['role'];
+                $_SESSION['role'] = $utilisateur['role'];
+
+                // Journalisation de la connexion dans MongoDB
+                try {
+                    ActivityLogger::log(
+                        'connexion',
+                        (int) $utilisateur['id'],
+                        [
+                            'role' => $utilisateur['role']
+                        ]
+                    );
+                } catch (\Throwable $e) {
+                    // Une erreur MongoDB ne doit pas bloquer la connexion
+                }
 
                 header("Location: " . BASE_URL . "index.php?url=profil");
                 exit;
@@ -45,7 +59,6 @@ class AuthController extends Controller
     }
 
 
-
     /**
      * Page d'inscription
      */
@@ -59,7 +72,7 @@ class AuthController extends Controller
             $prenom = trim($_POST['prenom'] ?? '');
             $nom = trim($_POST['nom'] ?? '');
             $email = trim($_POST['email'] ?? '');
-            $password = trim($_POST['password'] ?? '');
+            $password = trim($_POST['motdepasse'] ?? '');
 
             // Vérification simple
             if ($prenom === '' || $nom === '' || $email === '' || $password === '') {
@@ -87,7 +100,6 @@ class AuthController extends Controller
             'error' => $error
         ]);
     }
-
 
 
     /**

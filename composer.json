@@ -5,5 +5,7 @@
             "Natom\\Ecoride\\": "app/"
         }
     },
-    "require": {}
+    "require": {
+        "mongodb/mongodb": "^2.4"
+    }
 }
