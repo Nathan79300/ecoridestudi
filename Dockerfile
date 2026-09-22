@@ -1,6 +1,11 @@
 FROM php:8.2-apache
 
-RUN docker-php-ext-install pdo pdo_mysql
+RUN apt-get update \
+    && apt-get install -y \
+        libzip-dev \
+        unzip \
+    && docker-php-ext-install pdo pdo_mysql zip \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN pecl install mongodb-2.5.2 \
     && docker-php-ext-enable mongodb
