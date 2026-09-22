@@ -1,4 +1,3 @@
-
 <?php
 
 /*
@@ -61,7 +60,7 @@ if ($isLocal) {
 
 else {
 
-    $dbHost = 'ecoride-db-nat-753a.l.aivencloud.com';
+    $dbHost = 'ecoride-db-nat-753a1.aivencloud.com';
     $dbName = 'defaultdb';
 
     // Utilisateur Aiven
@@ -105,4 +104,3 @@ try {
         . $e->getMessage()
     );
 }
-
