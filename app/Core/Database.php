@@ -12,6 +12,7 @@ class Database
     public static function getConnection(): PDO
     {
         if (self::$connection === null) {
+
             $server = $_SERVER['SERVER_NAME'] ?? '';
 
             $isLocal = in_array(
@@ -20,7 +21,11 @@ class Database
                 true
             );
 
+            // =========================
+            // CONNEXION LOCALE
+            // =========================
             if ($isLocal) {
+
                 $dbHost = getenv('DB_HOST') ?: 'localhost';
                 $dbName = 'ecoride';
                 $dbUser = 'root';
@@ -33,8 +38,13 @@ class Database
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 ];
+
+            // =========================
+            // CONNEXION PRODUCTION AIVEN
+            // =========================
             } else {
-                $dbHost = 'ecoride-db-nat-753a.l.aivencloud.com';
+
+                $dbHost = 'ecoride-db-nat-753a1.aivencloud.com';
                 $dbName = 'defaultdb';
                 $dbUser = 'avnadmin';
                 $dbPass = getenv('DB_PASSWORD');
@@ -45,19 +55,29 @@ class Database
                 $options = [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+
+                    // Aiven exige une connexion SSL
                     PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
                 ];
             }
 
+            // =========================
+            // CONNEXION PDO
+            // =========================
             try {
+
                 self::$connection = new PDO(
                     $dsn,
                     $dbUser,
                     $dbPass,
                     $options
                 );
+
             } catch (PDOException $e) {
-                die("Erreur connexion DB : " . $e->getMessage());
+
+                die(
+                    "Erreur connexion DB : " . $e->getMessage()
+                );
             }
         }
 
