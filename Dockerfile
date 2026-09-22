@@ -1,6 +1,10 @@
 FROM php:8.2-apache
 
 RUN docker-php-ext-install pdo pdo_mysql
+
+RUN pecl install mongodb-2.5.2 \
+    && docker-php-ext-enable mongodb
+
 RUN a2enmod rewrite
 
 COPY . /var/www/html/
