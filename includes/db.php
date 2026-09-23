@@ -60,7 +60,7 @@ if ($isLocal) {
 
 else {
 
-    $dbHost = 'ecoride-db-nat-753a1.aivencloud.com';
+    $dbHost = 'ecoride-db-nat-753a.aivencloud.com';
     $dbName = 'defaultdb';
 
     // Utilisateur Aiven

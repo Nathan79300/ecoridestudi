@@ -44,7 +44,7 @@ class Database
             // =========================
             } else {
 
-                $dbHost = 'ecoride-db-nat-753a1.aivencloud.com';
+                $dbHost = 'ecoride-db-nat-753a.aivencloud.com';
                 $dbName = 'defaultdb';
                 $dbUser = 'avnadmin';
                 $dbPass = getenv('DB_PASSWORD');
